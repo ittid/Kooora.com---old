@@ -1,46 +1,66 @@
-export default function Poll() {
-  return (
-    <section className="bg-kooora-card shadow-card mb-3">
-      <header className="bg-kooora-dark text-white px-3 h-[32px] flex items-center">
-        <h3 className="text-[13px] font-bold text-kooora-gold">استفتاء</h3>
-      </header>
-      <div className="p-3">
-        <div className="flex items-start gap-2 mb-3">
-          <div className="w-10 h-10 rounded-full bg-kooora-gold/20 flex items-center justify-center text-kooora-gold text-lg font-bold">
-            ؟
-          </div>
-          <p className="text-[12px] leading-snug flex-1">
-            ما توقعاتك لنتيجة مباراة كريستوفيز أو البرشلونة؟
-          </p>
-        </div>
+"use client";
 
-        <form className="space-y-2 text-[12px]">
-          {["فوز كريستوفيز", "تعادل", "فوز البورنتونا"].map((opt, i) => (
-            <label key={i} className="flex items-center gap-2 cursor-pointer">
+import { useState } from "react";
+import SidebarPanel from "../shared/SidebarPanel";
+
+export default function Poll() {
+  const [choice, setChoice] = useState<string>("اليابان");
+
+  return (
+    <SidebarPanel title="استفتاء">
+      {/* Top: question + faded ? */}
+      <div className="relative p-4 bg-kooora-card" style={{ minHeight: 110 }}>
+        <div
+          aria-hidden
+          className="absolute top-2 left-2 text-[110px] leading-none font-black select-none pointer-events-none"
+          style={{ color: "#f1e6e6" }}
+        >
+          ؟
+        </div>
+        <p className="relative text-[13px] text-kooora-dark leading-snug text-end">
+          من سيذهب للنهائي العراق او اليابان؟
+        </p>
+      </div>
+
+      {/* Bottom: radios + button in light grey area */}
+      <div className="bg-[#f2f2f2] p-3">
+        <form className="space-y-2 text-[13px]">
+          {["العراق", "اليابان"].map((opt) => (
+            <label
+              key={opt}
+              className="flex items-center gap-2 cursor-pointer justify-end"
+            >
+              <span>{opt}</span>
               <input
                 type="radio"
                 name="poll"
-                className="accent-kooora-gold"
-                defaultChecked={i === 0}
+                value={opt}
+                checked={choice === opt}
+                onChange={(e) => setChoice(e.target.value)}
+                className="kooora-radio"
               />
-              <span>{opt}</span>
             </label>
           ))}
+
           <button
             type="button"
-            className="mt-2 w-full bg-kooora-gold text-kooora-dark font-bold py-1.5 rounded text-[12px] hover:bg-kooora-goldDark"
+            className="w-full bg-kooora-dark text-white font-bold py-1.5 text-[14px] mt-3"
           >
             تصويت
           </button>
         </form>
-
-        <div className="mt-2 text-[11px]">
-          <input type="checkbox" id="more" className="accent-kooora-gold" />
-          <label htmlFor="more" className="ms-1 text-kooora-muted">
-            المزيد
-          </label>
-        </div>
       </div>
-    </section>
+
+      {/* المزيد link bottom-left */}
+      <div className="bg-[#f2f2f2] border-t border-kooora-border/50 px-3 py-1.5">
+        <a
+          href="#"
+          className="text-[11px] text-kooora-muted hover:text-kooora-goldDark inline-flex items-center gap-1"
+        >
+          <span>◀</span>
+          <span>المزيد</span>
+        </a>
+      </div>
+    </SidebarPanel>
   );
 }

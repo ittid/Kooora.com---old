@@ -30,15 +30,17 @@ export default function TopBar() {
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-3">
             {/* Country pill with flags */}
             <div
-              className="headerFlags items-center rounded-[3px]"
+              className="headerFlags items-center"
               style={{
-                width: "355.14px",
+                margin: "3px 0 0 25px",
                 height: "31px",
-                background: "#444444",
                 padding: "5px",
+                background: "#444",
                 display: "flex",
                 justifyContent: "space-between",
                 flexDirection: "row-reverse",
+                borderRadius: 0,
+                boxShadow: "none",
               }}
             >
               <div className="flex items-center h-full">
@@ -56,12 +58,14 @@ export default function TopBar() {
                       <img src={f.src} alt="" className="w-full h-full object-cover" />
                     </button>
                     <span
-                      className="absolute top-full mt-1 left-1/2 -translate-x-1/2 bg-[#fb0] text-kooora-dark px-2 py-0.5 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none"
+                      className="absolute top-full mt-3 left-1/2 -translate-x-1/2 bg-[#fb0] text-kooora-dark px-2 py-0.5 whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none"
                       style={{
                         fontFamily: "Helvetica, Arial, sans-serif",
                         fontWeight: 400,
                         fontSize: "15px",
                         zIndex: 9999999,
+                        borderRadius: 0,
+                        boxShadow: "none",
                       }}
                     >
                       <span
@@ -73,7 +77,7 @@ export default function TopBar() {
                   </div>
                 ))}
               </div>
-              <span className="text-[12px] text-white whitespace-nowrap px-2 h-full flex items-center font-bold cursor-pointer hover:!text-[#DD6600]">
+              <span className="text-[14px] text-white whitespace-nowrap px-2 h-full flex items-center font-bold cursor-pointer hover:!text-[#DD6600]">
                 جميع الدول
               </span>
             </div>

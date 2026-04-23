@@ -1,29 +1,24 @@
+import Image from "next/image";
+
 export default function LatestAdditions() {
   return (
-    <section className="bg-kooora-card shadow-card mb-3">
-      <header className="bg-kooora-dark px-3 h-[32px] flex items-center">
-        <h3 className="text-kooora-gold text-[13px] font-bold">
-          آخر الإضافات للموقع
-        </h3>
+    <section className="mb-3">
+      <header className="bg-kooora-dark px-3 h-[32px] flex items-center border-b-2 border-kooora-gold">
+        <h3 className="text-white text-[13px] font-bold">آخر الإضافات للموقع</h3>
       </header>
-      <div className="p-3">
-        <a
-          href="#"
-          className="flex items-center justify-between bg-green-50 border border-green-200 rounded p-3 hover:bg-green-100"
-        >
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-white border-2 border-green-600 flex items-center justify-center text-green-700 font-black text-xs">
-              SBF
-            </div>
-            <div>
-              <div className="font-bold text-[13px] text-kooora-dark">
-                دوري كرة السلة للسيدات
-              </div>
-              <div className="text-[11px] text-kooora-muted">
-                المملكة العربية السعودية
-              </div>
-            </div>
-          </div>
+      <div className="bg-kooora-card p-3 flex justify-end">
+        <a href="#" className="flex flex-col items-center text-center w-[120px]">
+          <Image
+            src="https://picsum.photos/seed/kingsalman/80/80"
+            alt=""
+            width={80}
+            height={80}
+            className="w-[80px] h-[80px] object-contain bg-white"
+            unoptimized
+          />
+          <span className="text-[12px] font-bold text-red-800 mt-2 leading-tight">
+            كأس الملك سلمان للأندية الأبطال
+          </span>
         </a>
       </div>
     </section>

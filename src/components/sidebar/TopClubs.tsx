@@ -1,27 +1,38 @@
-import Panel from "../shared/Panel";
-import { topClubs } from "@/lib/data";
+import SidebarPanel from "../shared/SidebarPanel";
+
+type Group = { flag: string; clubs: string[] };
+
+const groups: Group[] = [
+  { flag: "🇪🇸", clubs: ["ريال مدريد", "برشلونة", "أتلتيكو مدريد"] },
+  { flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", clubs: ["مانشستر يونايتد", "تشيلسي", "أرسنال"] },
+  { flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", clubs: ["توتنهام هوتسبير", "مانشستر سيتي", "ليفربول"] },
+  { flag: "🇮🇹", clubs: ["ميلان", "روما", "إنتر ميلان"] },
+  { flag: "🇩🇪", clubs: ["بوروسيا دورتموند", "بايرن ميونيخ", "شالكه"] },
+  { flag: "🇫🇷", clubs: ["باريس سان جيرمان", "موناكو", ""] },
+];
 
 export default function TopClubs() {
   return (
-    <Panel title="أهم الأندية العالمية">
-      <ul className="grid grid-cols-2 gap-x-2 gap-y-1 text-[11px]">
-        {topClubs.map((c) => (
-          <li key={c.id} className="flex items-center gap-1.5 py-0.5">
-            <span className="text-[12px]">{c.flag}</span>
-            <a href="#" className="text-kooora-dark hover:text-kooora-goldDark truncate">
-              {c.name}
-            </a>
+    <SidebarPanel title="أهم الأندية العالمية">
+      <ul className="divide-y divide-kooora-border/40 text-[11.5px]">
+        {groups.map((g, i) => (
+          <li
+            key={i}
+            className="py-1.5 px-2 grid grid-cols-[18px_1fr_1fr_1fr] items-center gap-2"
+          >
+            <span className="text-[14px]">{g.flag}</span>
+            {g.clubs.map((c, j) => (
+              <span key={j} className="text-kooora-dark">
+                {c && (
+                  <a href="#" className="hover:text-kooora-goldDark">
+                    {c}
+                  </a>
+                )}
+              </span>
+            ))}
           </li>
         ))}
       </ul>
-      <div className="mt-2 text-center">
-        <a
-          href="#"
-          className="inline-block text-[11px] bg-kooora-gold text-kooora-dark px-3 py-1 font-semibold rounded"
-        >
-          StriveME
-        </a>
-      </div>
-    </Panel>
+    </SidebarPanel>
   );
 }

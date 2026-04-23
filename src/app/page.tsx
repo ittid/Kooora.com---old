@@ -31,20 +31,8 @@ export default function HomePage() {
       <HeaderBanner />
       <MainNav />
 
-      <main className="w-[970px] mx-auto py-3 grid grid-cols-[300px_1fr] gap-2">
-        {/* Sidebar (visually on the left in RTL) */}
-        <aside>
-          <SidebarAd />
-          <ImportantMatches />
-          <SidebarVideos />
-          <TopLeagues />
-          <TopClubs />
-          <MostRead />
-          <Articles />
-          <Poll />
-        </aside>
-
-        {/* Main content */}
+      <main className="w-[970px] mx-auto py-3 grid grid-cols-[1fr_300px] gap-2">
+        {/* Main content (right in RTL) */}
         <div>
           <FeaturedVideo />
           <NewsList items={topNews.slice(0, 8)} />
@@ -60,6 +48,18 @@ export default function HomePage() {
           <Tournaments />
           <LatestAdditions />
         </div>
+
+        {/* Sidebar (left in RTL) */}
+        <aside>
+          <SidebarAd />
+          <ImportantMatches />
+          <SidebarVideos />
+          <TopLeagues />
+          <TopClubs />
+          <MostRead />
+          <Articles />
+          <Poll />
+        </aside>
       </main>
 
       <Footer />
