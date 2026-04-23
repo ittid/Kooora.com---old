@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 html {
-  font-family: Calibri, "Carlito", "Segoe UI", Tahoma, Arial, sans-serif;
+  font-family: Helvetica, Arial, sans-serif;
 }
 
 body {
@@ -25,6 +25,29 @@ body {
 /* Video player placeholder */
 .video-placeholder {
   background: #000;
+}
+
+/* Kooora-style radio: outer black ring, black inner dot when checked, white bg */
+.kooora-radio {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 13px;
+  height: 13px;
+  border: 1px solid #333;
+  border-radius: 50%;
+  background: #fff;
+  display: inline-block;
+  position: relative;
+  margin: 0;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+.kooora-radio:checked::after {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  background: #333;
+  border-radius: 50%;
 }
 
 /* Section title underline (gold) */

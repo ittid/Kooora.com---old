@@ -2,161 +2,172 @@
 
 import { useEffect, useMemo, useState } from "react";
 
-// GMT offsets from -12 to +13 in 0.5 steps, matching the Kooora dialog
-const OFFSETS: number[] = [];
-for (let x = -12; x <= 13; x += 0.5) OFFSETS.push(x);
-
-function formatOffsetLabel(offset: number): string {
-  const sign = offset >= 0 ? "+" : "-";
-  const abs = Math.abs(offset);
-  // Kept as decimal (e.g. 3.5) to match the screenshot
-  const display = Number.isInteger(abs) ? `${abs}` : `${abs}`;
-  return `جرينتش ${sign}${display}`;
-}
-
-function formatTime(date: Date, offsetHours: number): string {
-  // Convert to target offset from UTC
+function formatTime(date: Date, offsetHours: number, hour12: boolean): string {
   const utcMs = date.getTime() + date.getTimezoneOffset() * 60_000;
   const shifted = new Date(utcMs + offsetHours * 3_600_000);
-  const hh = shifted.getHours().toString().padStart(2, "0");
+  let hh = shifted.getHours();
   const mm = shifted.getMinutes().toString().padStart(2, "0");
-  return `${hh}:${mm}`;
+  if (hour12) {
+    const suffix = hh >= 12 ? "PM" : "AM";
+    hh = hh % 12;
+    if (hh === 0) hh = 12;
+    return `${hh.toString().padStart(2, "0")}:${mm} ${suffix}`;
+  }
+  return `${hh.toString().padStart(2, "0")}:${mm}`;
 }
 
 function getBrowserOffsetHours(): number {
-  // getTimezoneOffset returns minutes *behind* UTC, so negate
   return -new Date().getTimezoneOffset() / 60;
 }
 
-const STORAGE_KEY = "kooora:tz-offset";
+const TZ_KEY = "kooora:tz-offset";
+const FMT_KEY = "kooora:tz-format"; // "24" | "12"
 
 export default function TimezoneWidget() {
   const [mounted, setMounted] = useState(false);
   const [now, setNow] = useState<Date>(new Date());
   const [offset, setOffset] = useState<number>(0);
+  const [hour12, setHour12] = useState<boolean>(false);
   const [open, setOpen] = useState(false);
 
-  // Initialize from localStorage or browser on mount
   useEffect(() => {
-    const stored = typeof window !== "undefined" ? localStorage.getItem(STORAGE_KEY) : null;
-    setOffset(stored !== null ? parseFloat(stored) : getBrowserOffsetHours());
+    const storedTz = typeof window !== "undefined" ? localStorage.getItem(TZ_KEY) : null;
+    const storedFmt = typeof window !== "undefined" ? localStorage.getItem(FMT_KEY) : null;
+    setOffset(storedTz !== null ? parseFloat(storedTz) : getBrowserOffsetHours());
+    setHour12(storedFmt === "12");
     setMounted(true);
   }, []);
 
-  // Tick clock every second
   useEffect(() => {
     const id = setInterval(() => setNow(new Date()), 1000);
     return () => clearInterval(id);
   }, []);
 
-  const time = useMemo(() => formatTime(now, offset), [now, offset]);
-  const offsetLabel = useMemo(() => formatOffsetLabel(offset), [offset]);
+  const time = useMemo(
+    () => formatTime(now, offset, hour12),
+    [now, offset, hour12],
+  );
 
-  function choose(o: number) {
-    setOffset(o);
+  function chooseFormat(h12: boolean) {
+    setHour12(h12);
     try {
-      localStorage.setItem(STORAGE_KEY, String(o));
+      localStorage.setItem(FMT_KEY, h12 ? "12" : "24");
     } catch {}
-    setOpen(false);
   }
 
-  // Render a non-interactive placeholder during SSR to avoid hydration mismatch
   if (!mounted) {
     return (
-      <div className="flex items-center gap-3 text-[13px] whitespace-nowrap">
-        <span className="text-kooora-gold font-bold">--:--</span>
-        <span className="text-white/80">جرينتش</span>
+      <div className="flex items-center gap-2 text-[13px] whitespace-nowrap">
+        <span
+          style={{
+            fontWeight: 700,
+            fontSize: "14px",
+            lineHeight: "35px",
+            color: "#FFFFFF",
+          }}
+        >
+          جرينتش
+        </span>
+        <span
+          style={{
+            fontWeight: 700,
+            fontSize: "14px",
+            lineHeight: "35px",
+            color: "#FFFFFF",
+          }}
+        >
+          --:--
+        </span>
       </div>
     );
   }
 
   return (
-    <>
-      <div className="flex items-center gap-3 text-[13px] whitespace-nowrap">
-        <span className="text-kooora-gold font-bold">{time}</span>
-        <button
-          onClick={() => setOpen(true)}
-          className="text-white/80 hover:text-[#d60]"
-          title="تغيير التوقيت"
-        >
-          {offsetLabel}
-        </button>
-      </div>
-
-      {open && <TimezoneDialog current={offset} onClose={() => setOpen(false)} onChoose={choose} />}
-    </>
-  );
-}
-
-function TimezoneDialog({
-  current,
-  onClose,
-  onChoose,
-}: {
-  current: number;
-  onClose: () => void;
-  onChoose: (o: number) => void;
-}) {
-  // Split into 3 columns of ~17 items like the screenshot
-  const perCol = Math.ceil(OFFSETS.length / 3);
-  const columns = [
-    OFFSETS.slice(0, perCol),
-    OFFSETS.slice(perCol, perCol * 2),
-    OFFSETS.slice(perCol * 2),
-  ];
-
-  return (
-    <div
-      className="fixed inset-0 z-50 bg-black/50 flex items-start justify-center pt-16"
-      onClick={onClose}
-    >
-      <div
-        className="bg-white shadow-2xl w-[320px]"
-        onClick={(e) => e.stopPropagation()}
+    <div className="relative flex items-center gap-2 text-[13px] whitespace-nowrap">
+      <span
+        className="hover:!text-[#DD6600]"
+        style={{
+          fontWeight: 700,
+          fontSize: "14px",
+          lineHeight: "35px",
+          color: "#FFFFFF",
+        }}
       >
-        <header className="bg-kooora-dark text-white px-3 h-[34px] flex items-center justify-between">
-          <button
-            onClick={onClose}
-            className="bg-kooora-gold text-kooora-dark text-[11px] font-bold px-2 py-0.5 rounded"
+        جرينتش
+      </span>
+      <span
+        onMouseEnter={() => setOpen(true)}
+        onMouseLeave={() => setOpen(false)}
+        style={{
+          fontWeight: 700,
+          fontSize: "14px",
+          lineHeight: "35px",
+          color: "#FFFFFF",
+          cursor: "default",
+        }}
+      >
+        {time}
+      </span>
+
+      {/* Tooltip — tooltipster-style, 350ms fade, matches Kooora inspector */}
+      <div
+        onMouseEnter={() => setOpen(true)}
+        onMouseLeave={() => setOpen(false)}
+        style={{
+          zIndex: 9999999,
+          transitionDuration: "350ms",
+          animationDuration: "350ms",
+        }}
+        className={`absolute top-full end-0 pt-[2px] transition-opacity ${
+          open
+            ? "opacity-100 pointer-events-auto"
+            : "opacity-0 pointer-events-none"
+        }`}
+      >
+        <div
+          className="relative rounded shadow-lg"
+          style={{
+            background: "#eeeeee",
+            border: "1px solid #999999",
+            width: "236.594px",
+            height: "44px",
+          }}
+        >
+          <span
+            aria-hidden
+            className="absolute -top-[6px] end-6 w-[10px] h-[10px] rotate-45"
+            style={{
+              background: "#eeeeee",
+              borderTop: "1px solid #999999",
+              borderLeft: "1px solid #999999",
+            }}
+          />
+          <div
+            dir="rtl"
+            className="flex items-center justify-center gap-3 text-[12px] text-kooora-dark h-full px-3"
+            style={{ fontWeight: 400 }}
           >
-            إغلاق
-          </button>
-          <h3 className="text-kooora-gold font-bold text-[13px]">التوقيت المستخدم</h3>
-        </header>
-
-        <div className="p-3 text-[12px] text-kooora-dark">
-          <p className="font-bold mb-2">
-            الرجاء اختيار توقيتك المحلي أدناه لتغيير توقيت عرض الجداول
-          </p>
-          <p className="text-kooora-muted text-[11px] mb-1">
-            سيتم حفظ هذا الخيار في جهازك للزيارات القادمة
-          </p>
-          <p className="text-red-600 text-[11px] mb-3">
-            ملاحظة هامة: يجب أن تكون خاصية &quot;الكوكيز&quot; مفعلة في متصفحك حتى يتم تغيير وقتك المحلي في الموقع
-          </p>
-
-          <div className="grid grid-cols-3 gap-x-1 gap-y-0.5">
-            {columns.map((col, ci) => (
-              <ul key={ci} className="space-y-0.5">
-                {col.map((o) => {
-                  const selected = o === current;
-                  return (
-                    <li key={o}>
-                      <button
-                        onClick={() => onChoose(o)}
-                        className={`w-full text-start px-2 py-1 rounded text-[11.5px] ${
-                          selected
-                            ? "bg-kooora-gold text-kooora-dark font-bold"
-                            : "hover:bg-kooora-page"
-                        }`}
-                      >
-                        {formatOffsetLabel(o)}
-                      </button>
-                    </li>
-                  );
-                })}
-              </ul>
-            ))}
+            <span>التوقيت المستخدم</span>
+            <label className="flex items-center gap-1 cursor-pointer">
+              <input
+                type="radio"
+                name="hfmt"
+                checked={!hour12}
+                onChange={() => chooseFormat(false)}
+                className="kooora-radio"
+              />
+              <span>24 ساعة</span>
+            </label>
+            <label className="flex items-center gap-1 cursor-pointer">
+              <input
+                type="radio"
+                name="hfmt"
+                checked={hour12}
+                onChange={() => chooseFormat(true)}
+                className="kooora-radio"
+              />
+              <span>12 ساعة</span>
+            </label>
           </div>
         </div>
       </div>
