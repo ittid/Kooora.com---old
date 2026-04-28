@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import "flag-icons/css/flag-icons.min.css";
+
 html {
   font-family: Helvetica, Arial, sans-serif;
 }
