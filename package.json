@@ -4,15 +4,26 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:clean": "node -e \"require('fs').rmSync('.next',{recursive:true,force:true})\" && next dev",
+    "clean": "node -e \"require('fs').rmSync('.next',{recursive:true,force:true})\"",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "import:photos": "tsx scripts/import-thesportsdb-photos.ts",
+    "import:photos:force": "tsx scripts/import-thesportsdb-photos.ts --force",
+    "sync:fixtures": "tsx scripts/sync-fixtures.ts"
   },
   "dependencies": {
+    "@prisma/client": "^6.19.3",
+    "@supabase/ssr": "^0.10.2",
+    "@supabase/supabase-js": "^2.105.1",
     "flag-icons": "^7.5.0",
     "next": "15.1.6",
     "react": "19.0.0",
-    "react-dom": "19.0.0"
+    "react-dom": "19.0.0",
+    "react-icons": "^5.6.0",
+    "react-player": "^3.4.0",
+    "sharp": "^0.34.5"
   },
   "devDependencies": {
     "@types/node": "22.10.5",
@@ -20,7 +31,9 @@
     "@types/react-dom": "19.0.3",
     "autoprefixer": "10.4.20",
     "postcss": "8.5.1",
+    "prisma": "^6",
     "tailwindcss": "3.4.17",
+    "tsx": "^4.21.0",
     "typescript": "5.7.3"
   }
 }

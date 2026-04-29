@@ -1,117 +1,141 @@
 import Image from "next/image";
+import Link from "next/link";
 import SidebarPanel from "../shared/SidebarPanel";
+import { fetchTopMatches } from "@/lib/data-source";
 
-type Match = {
-  id: string;
-  home: { name: string; logo: string };
-  away: { name: string; logo: string };
-  homeScore: number;
-  awayScore: number;
-  status: string;
-};
-
-const matches: Match[] = [
-  {
-    id: "1",
-    home: { name: "مانشستر سيتي", logo: "https://picsum.photos/seed/mcity/50" },
-    away: { name: "لايبزيج", logo: "https://picsum.photos/seed/rbl/50" },
-    homeScore: 7,
-    awayScore: 0,
-    status: "انتهت",
-  },
-  {
-    id: "2",
-    home: { name: "بورتو", logo: "https://picsum.photos/seed/porto/50" },
-    away: { name: "انتر ميلان", logo: "https://picsum.photos/seed/inter/50" },
-    homeScore: 0,
-    awayScore: 0,
-    status: "انتهت",
-  },
-  {
-    id: "3",
-    home: { name: "النصر", logo: "https://picsum.photos/seed/nassr/50" },
-    away: { name: "أبها", logo: "https://picsum.photos/seed/abha/50" },
-    homeScore: 3,
-    awayScore: 1,
-    status: "انتهت",
-  },
-  {
-    id: "4",
-    home: { name: "الوحدة", logo: "https://picsum.photos/seed/wehda/50" },
-    away: { name: "الباطن", logo: "https://picsum.photos/seed/baten/50" },
-    homeScore: 2,
-    awayScore: 1,
-    status: "انتهت",
-  },
-  {
-    id: "5",
-    home: { name: "الهلال", logo: "https://picsum.photos/seed/hilal/50" },
-    away: { name: "الفتح", logo: "https://picsum.photos/seed/fath/50" },
-    homeScore: 3,
-    awayScore: 1,
-    status: "انتهت",
-  },
-  {
-    id: "6",
-    home: { name: "الوداد الرياضي", logo: "https://picsum.photos/seed/wydad/50" },
-    away: { name: "اتحاد طنجة", logo: "https://picsum.photos/seed/ittihadtanja/50" },
-    homeScore: 3,
-    awayScore: 0,
-    status: "انتهت",
-  },
-];
-
-function TeamCol({ name, logo }: { name: string; logo: string }) {
+function TeamCol({
+  name,
+  logo,
+  slug,
+}: {
+  name: string;
+  logo: string;
+  slug: string;
+}) {
   return (
-    <div className="flex flex-col items-center gap-1 min-w-0">
+    <Link
+      href={`/teams/${slug}`}
+      className="flex flex-col items-center gap-1 min-w-0 group"
+    >
       <Image
         src={logo}
-        alt=""
-        width={50}
-        height={50}
-        className="w-[50px] h-[50px] object-contain"
+        alt={name}
+        width={44}
+        height={44}
+        className="w-[44px] h-[44px] object-contain"
         unoptimized
       />
-      <span className="text-[11.5px] text-kooora-dark text-center truncate w-full">
+      <span className="text-[11.5px] text-kooora-dark text-center truncate w-full group-hover:text-kooora-goldDark">
         {name}
+      </span>
+    </Link>
+  );
+}
+
+function TimeBox({ time, dayLabel }: { time: string; dayLabel: string }) {
+  return (
+    <div className="relative flex justify-center group/tip">
+      <div
+        className="flex flex-col items-center justify-center bg-[#222] text-white rounded-md shadow-sm"
+        style={{
+          width: "70px",
+          height: "48px",
+          fontFamily: "Helvetica, Arial, sans-serif",
+        }}
+      >
+        <span className="text-[11px] leading-none mb-1">{dayLabel}</span>
+        <span
+          className="font-bold leading-none inline-flex items-center gap-1"
+          style={{ fontSize: "14px" }}
+          dir="ltr"
+        >
+          <span>{time}</span>
+          <svg
+            width="11"
+            height="11"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            aria-hidden
+          >
+            <circle cx="12" cy="12" r="9" />
+            <path d="M12 7v5l3 2" strokeLinecap="round" />
+          </svg>
+        </span>
+      </div>
+
+      <span
+        role="tooltip"
+        className="pointer-events-none absolute -top-6 right-0 translate-x-1/4 whitespace-nowrap bg-[#fff4d0] text-kooora-dark text-[11px] px-2 py-0.5 border border-[#d9b94a] rounded-sm opacity-0 group-hover/tip:opacity-100 transition-opacity"
+      >
+        توقيت المباراة
       </span>
     </div>
   );
 }
 
-export default function ImportantMatches() {
+function formatTime(iso: string) {
+  const d = new Date(iso);
+  const hh = String(d.getHours()).padStart(2, "0");
+  const mm = String(d.getMinutes()).padStart(2, "0");
+  return `${hh}:${mm}`;
+}
+
+function dayLabelFromIso(iso: string) {
+  const d = new Date(iso);
+  const now = new Date();
+  const dayMs = 24 * 60 * 60 * 1000;
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+  const dayStart = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+  const delta = Math.round((dayStart - today) / dayMs);
+  if (delta === 0) return "اليوم";
+  if (delta === 1) return "غدا";
+  if (delta === -1) return "أمس";
+  return d.toLocaleDateString("ar-EG", { day: "numeric", month: "short" });
+}
+
+export default async function ImportantMatches() {
+  const matches = await fetchTopMatches(6);
+
   return (
     <SidebarPanel title="أهم المباريات">
-      <ul className="divide-y divide-kooora-border/50">
-        {matches.map((m) => (
-          <li
-            key={m.id}
-            className="py-3 px-2 grid grid-cols-3 items-center gap-1"
-          >
-            {/* Home team (right side in RTL, first in source) */}
-            <TeamCol name={m.home.name} logo={m.home.logo} />
-
-            {/* Score box (center) */}
-            <div className="flex flex-col items-center">
-              <div
-                className="px-3 py-0.5 text-kooora-dark font-bold text-[14px]"
-                style={{
-                  background: "#fff4d0",
-                  border: "1px solid #d9b94a",
-                  minWidth: "56px",
-                  textAlign: "center",
-                }}
-                dir="ltr"
-              >
-                {m.homeScore} : {m.awayScore}
-              </div>
-              <div className="text-[10px] text-kooora-muted mt-0.5">{m.status}</div>
-            </div>
-
-            {/* Away team (left in RTL) */}
-            <TeamCol name={m.away.name} logo={m.away.logo} />
+      <ul className="divide-y divide-kooora-border/40">
+        {matches.length === 0 && (
+          <li className="py-3 px-2 text-center text-[12px] text-kooora-muted">
+            لا توجد مباريات.
           </li>
-        ))}
+        )}
+        {matches.map((m) => {
+          const home = m.home;
+          const away = m.away;
+          if (!home || !away) return null;
+          const isFinished =
+            m.status === "finished" && m.home_score !== null && m.away_score !== null;
+          return (
+            <li
+              key={m.id}
+              className="py-2.5 px-2 grid grid-cols-3 items-center gap-1"
+            >
+              <TeamCol
+                name={home.name_ar}
+                logo={home.logo_url ?? `https://picsum.photos/seed/${home.slug}/40`}
+                slug={home.slug}
+              />
+              <Link href={`/matches/${m.id}`} aria-label="تفاصيل المباراة">
+                <TimeBox
+                  time={isFinished ? `${m.home_score} - ${m.away_score}` : formatTime(m.kickoff_at)}
+                  dayLabel={dayLabelFromIso(m.kickoff_at)}
+                />
+              </Link>
+              <TeamCol
+                name={away.name_ar}
+                logo={away.logo_url ?? `https://picsum.photos/seed/${away.slug}/40`}
+                slug={away.slug}
+              />
+            </li>
+          );
+        })}
       </ul>
     </SidebarPanel>
   );

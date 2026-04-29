@@ -4,7 +4,17 @@ export default function Interviews() {
   return (
     <section className="bg-kooora-card shadow-card mb-3">
       <header className="bg-kooora-dark px-3 h-[32px] flex items-center">
-        <h3 className="text-kooora-gold text-[13px] font-bold">مقابلات</h3>
+        <h3
+          className="text-kooora-gold"
+          style={{
+            fontFamily: "Helvetica, Arial, sans-serif",
+            fontSize: "16px",
+            lineHeight: "30px",
+            fontWeight: 600,
+          }}
+        >
+          مقابلات
+        </h3>
       </header>
       <div className="p-3 flex gap-3">
         <div className="flex-1 min-w-0">

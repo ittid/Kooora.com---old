@@ -1,14 +1,19 @@
-"use client";
-
-import { useState } from "react";
 import SidebarPanel from "../shared/SidebarPanel";
+import { fetchActivePoll } from "@/lib/data-source";
+import PollForm from "./PollForm";
 
-export default function Poll() {
-  const [choice, setChoice] = useState<string>("اليابان");
+export default async function Poll() {
+  const poll = await fetchActivePoll();
+
+  // Fallback content when there's no poll yet (or Supabase isn't set up).
+  const question = poll?.question ?? "من سيذهب للنهائي العراق أم اليابان؟";
+  const options = poll?.poll_options ?? [
+    { id: "fallback-iraq",  label: "العراق",  votes: 0, sort_order: 0 },
+    { id: "fallback-japan", label: "اليابان", votes: 0, sort_order: 1 },
+  ];
 
   return (
     <SidebarPanel title="استفتاء">
-      {/* Top: question + faded ? */}
       <div className="relative p-4 bg-kooora-card" style={{ minHeight: 110 }}>
         <div
           aria-hidden
@@ -18,40 +23,12 @@ export default function Poll() {
           ؟
         </div>
         <p className="relative text-[13px] text-kooora-dark leading-snug text-end">
-          من سيذهب للنهائي العراق او اليابان؟
+          {question}
         </p>
       </div>
 
-      {/* Bottom: radios + button in light grey area */}
-      <div className="bg-[#f2f2f2] p-3">
-        <form className="space-y-2 text-[13px]">
-          {["العراق", "اليابان"].map((opt) => (
-            <label
-              key={opt}
-              className="flex items-center gap-2 cursor-pointer justify-end"
-            >
-              <span>{opt}</span>
-              <input
-                type="radio"
-                name="poll"
-                value={opt}
-                checked={choice === opt}
-                onChange={(e) => setChoice(e.target.value)}
-                className="kooora-radio"
-              />
-            </label>
-          ))}
+      <PollForm pollId={poll?.id ?? null} options={options} />
 
-          <button
-            type="button"
-            className="w-full bg-kooora-dark text-white font-bold py-1.5 text-[14px] mt-3"
-          >
-            تصويت
-          </button>
-        </form>
-      </div>
-
-      {/* المزيد link bottom-left */}
       <div className="bg-[#f2f2f2] border-t border-kooora-border/50 px-3 py-1.5">
         <a
           href="#"

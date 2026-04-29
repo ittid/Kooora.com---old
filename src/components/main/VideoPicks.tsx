@@ -27,7 +27,17 @@ export default function VideoPicks() {
   return (
     <section className="mb-3">
       <header className="bg-kooora-dark px-3 h-[32px] flex items-center border-b-2 border-kooora-gold">
-        <h3 className="text-white text-[13px] font-bold">مختارات الفيديو</h3>
+        <h3
+          className="text-white"
+          style={{
+            fontFamily: "Helvetica, Arial, sans-serif",
+            fontSize: "16px",
+            lineHeight: "30px",
+            fontWeight: 600,
+          }}
+        >
+          مختارات الفيديو
+        </h3>
       </header>
       <div className="bg-kooora-darkSoft p-3">
         <div className="grid grid-cols-4 gap-2">

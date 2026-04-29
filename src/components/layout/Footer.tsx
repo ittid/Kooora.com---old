@@ -1,10 +1,13 @@
-const columns: string[][] = [
-  ["أخبار", "فرق", "لاعبون", "مباريات", "جميع المسابقات", "رياضات أخرى"],
-  ["TV", "صور", "منتديات"],
-  ["مباريات جارية الآن", "مباريات اليوم", "مباريات الغد", "مباريات الأمس"],
-  ["الدوري الاسباني", "الدوري الانجليزي", "الدوري الايطالي", "دوري ابطال اوروبا"],
-  ["سياسة الاستخدام", "اتصل بنا", "اعلن معنا"],
-];
+import Link from "next/link";
+import {
+  FaInstagram,
+  FaXTwitter,
+  FaFacebookF,
+  FaWhatsapp,
+  FaTiktok,
+  FaYoutube,
+} from "react-icons/fa6";
+import { footerColumns, socialLinks } from "@/lib/routes";
 
 export default function Footer() {
   return (
@@ -15,14 +18,14 @@ export default function Footer() {
       <div className="w-[970px] mx-auto bg-kooora-dark text-white px-6 pt-4 pb-6">
         {/* Logo on the top RIGHT (first in source under RTL) */}
         <div className="flex items-center justify-start mb-3">
-          <div className="flex items-center gap-2">
+          <Link href="/" className="flex items-center gap-2">
             <div className="w-9 h-9 rounded-full bg-kooora-gold flex items-center justify-center">
               <span className="text-kooora-dark font-black text-lg">K</span>
             </div>
             <span className="text-kooora-gold font-black text-2xl tracking-wide">
               KOOORA
             </span>
-          </div>
+          </Link>
         </div>
 
         {/* Gold rule */}
@@ -30,42 +33,50 @@ export default function Footer() {
 
         {/* 5 link columns */}
         <div className="grid grid-cols-5 gap-4 text-[13px] mb-6 text-white/90">
-          {columns.map((col, i) => (
+          {footerColumns.map((col, i) => (
             <ul key={i} className="space-y-2">
-              {col.map((link, j) => (
-                <li key={j}>
-                  <a href="#" className="hover:text-kooora-gold">
-                    {link}
-                  </a>
+              {col.map((link) => (
+                <li key={link.href}>
+                  <Link href={link.href} className="hover:text-kooora-gold">
+                    {link.label}
+                  </Link>
                 </li>
               ))}
             </ul>
           ))}
         </div>
 
-        {/* Social icons — on the LEFT in RTL, so we use justify-start with me-auto in LTR world...
-            Under dir="rtl", "start" = right. To place icons on the visual LEFT, we use ms-auto.
-            Actually simplest: wrap in a flex row with justify-end (end = left in RTL). */}
+        {/* Social icons — visual LEFT under RTL = justify-end */}
         <div className="flex justify-end mb-5">
           <div className="grid grid-cols-3 gap-x-2 gap-y-2">
-            {/* Row 1 */}
             <SocialIcon
+              href={socialLinks.instagram}
               label="Instagram"
               bg="linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888)"
-              letter="I"
-            />
-            <SocialIcon label="Twitter" bg="#1da1f2" letter="t" />
-            <SocialIcon label="Facebook" bg="#1877f2" letter="f" />
-            {/* Row 2 */}
-            <SocialIcon label="Phone" bg="#e5e5e5" letter="☎" textColor="#333" />
-            <SocialIcon label="TikTok" bg="#000" letter="♪" />
-            <SocialIcon label="YouTube" bg="#ff0000" letter="▶" />
+            >
+              <FaInstagram />
+            </SocialIcon>
+            <SocialIcon href={socialLinks.twitter} label="X (Twitter)" bg="#000">
+              <FaXTwitter />
+            </SocialIcon>
+            <SocialIcon href={socialLinks.facebook} label="Facebook" bg="#1877f2">
+              <FaFacebookF />
+            </SocialIcon>
+            <SocialIcon href={socialLinks.whatsapp} label="WhatsApp" bg="#25d366">
+              <FaWhatsapp />
+            </SocialIcon>
+            <SocialIcon href={socialLinks.tiktok} label="TikTok" bg="#000">
+              <FaTiktok />
+            </SocialIcon>
+            <SocialIcon href={socialLinks.youtube} label="YouTube" bg="#ff0000">
+              <FaYoutube />
+            </SocialIcon>
           </div>
         </div>
 
         {/* Copyright */}
         <div className="text-center text-[12px] text-white/80">
-          جميع الحقوق محفوظة لـ كووورة © 2023
+          جميع الحقوق محفوظة لـ كووورة © {new Date().getFullYear()}
         </div>
       </div>
     </footer>
@@ -73,24 +84,26 @@ export default function Footer() {
 }
 
 function SocialIcon({
+  href,
   label,
   bg,
-  letter,
-  textColor = "#fff",
+  children,
 }: {
+  href: string;
   label: string;
   bg: string;
-  letter: string;
-  textColor?: string;
+  children: React.ReactNode;
 }) {
   return (
     <a
-      href="#"
+      href={href}
       aria-label={label}
-      className="w-9 h-9 rounded-full flex items-center justify-center text-[14px] font-bold"
-      style={{ background: bg, color: textColor }}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="w-9 h-9 rounded-full flex items-center justify-center text-white text-[15px]"
+      style={{ background: bg }}
     >
-      {letter}
+      {children}
     </a>
   );
 }

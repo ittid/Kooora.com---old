@@ -4,7 +4,17 @@ export default function LatestAdditions() {
   return (
     <section className="mb-3">
       <header className="bg-kooora-dark px-3 h-[32px] flex items-center border-b-2 border-kooora-gold">
-        <h3 className="text-white text-[13px] font-bold">آخر الإضافات للموقع</h3>
+        <h3
+          className="text-white"
+          style={{
+            fontFamily: "Helvetica, Arial, sans-serif",
+            fontSize: "16px",
+            lineHeight: "30px",
+            fontWeight: 600,
+          }}
+        >
+          آخر الإضافات للموقع
+        </h3>
       </header>
       <div className="bg-kooora-card p-3 flex justify-end">
         <a href="#" className="flex flex-col items-center text-center w-[120px]">

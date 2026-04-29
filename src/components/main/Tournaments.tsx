@@ -11,7 +11,17 @@ export default function Tournaments() {
   return (
     <section className="mb-3">
       <header className="bg-kooora-dark px-3 h-[32px] flex items-center border-b-2 border-kooora-gold">
-        <h3 className="text-white text-[13px] font-bold">أهم البطولات الحالية</h3>
+        <h3
+          className="text-white"
+          style={{
+            fontFamily: "Helvetica, Arial, sans-serif",
+            fontSize: "16px",
+            lineHeight: "30px",
+            fontWeight: 600,
+          }}
+        >
+          أهم البطولات الحالية
+        </h3>
       </header>
       <div className="bg-kooora-card p-3">
         <ul className="grid grid-cols-6 gap-2">

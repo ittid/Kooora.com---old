@@ -1,4 +1,8 @@
 import Image from "next/image";
+import VideoPlayer from "@/components/shared/VideoPlayer";
+
+const FEATURED_VIDEO =
+  "https://www.youtube.com/watch?v=BHACKCNDMW8";
 
 const thumbs = [
   { id: "t1", image: "https://picsum.photos/seed/fv1/260/120", time: "07:20" },
@@ -9,16 +13,7 @@ const thumbs = [
 export default function FeaturedVideo() {
   return (
     <div className="bg-kooora-card shadow-card mb-3">
-      <div className="video-placeholder aspect-[16/8] w-full flex items-center justify-center">
-        <button
-          aria-label="تشغيل"
-          className="w-16 h-16 rounded-full bg-kooora-gold/90 text-kooora-dark flex items-center justify-center shadow-xl hover:bg-kooora-gold"
-        >
-          <svg width="22" height="22" viewBox="0 0 10 10" fill="currentColor">
-            <path d="M2 1.5v7l6-3.5z" />
-          </svg>
-        </button>
-      </div>
+      <VideoPlayer src={FEATURED_VIDEO} />
       <div className="grid grid-cols-3 gap-[1px] bg-kooora-dark/10">
         {thumbs.map((t) => (
           <button

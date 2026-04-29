@@ -1,16 +1,4 @@
-import TopBar from "@/components/layout/TopBar";
-import HeaderBanner from "@/components/layout/HeaderBanner";
-import MainNav from "@/components/layout/MainNav";
-import Footer from "@/components/layout/Footer";
-
-import SidebarAd from "@/components/sidebar/SidebarAd";
-import ImportantMatches from "@/components/sidebar/ImportantMatches";
-import SidebarVideos from "@/components/sidebar/SidebarVideos";
-import TopLeagues from "@/components/sidebar/TopLeagues";
-import TopClubs from "@/components/sidebar/TopClubs";
-import MostRead from "@/components/sidebar/MostRead";
-import Articles from "@/components/sidebar/Articles";
-import Poll from "@/components/sidebar/Poll";
+import SiteShell from "@/components/layout/SiteShell";
 
 import FeaturedVideo from "@/components/main/FeaturedVideo";
 import NewsList from "@/components/main/NewsList";
@@ -22,47 +10,41 @@ import Interviews from "@/components/main/Interviews";
 import Tournaments from "@/components/main/Tournaments";
 import LatestAdditions from "@/components/main/LatestAdditions";
 
-import { topNews, leagueSections } from "@/lib/data";
+import { fetchTopNews, fetchPostsByLeagueSlug } from "@/lib/data-source";
 
-export default function HomePage() {
+const FEATURED_LEAGUES: { slug: string; title: string }[] = [
+  { slug: "premier-league", title: "الدوري الإنجليزي الممتاز" },
+  { slug: "serie-a", title: "الدوري الإيطالي الدرجة A" },
+  { slug: "laliga", title: "الدوري الإسباني الدرجة الأولى" },
+  { slug: "champions-league", title: "دوري أبطال أوروبا" },
+];
+
+export default async function HomePage() {
+  const [topNews, ...leagueNewsArrays] = await Promise.all([
+    fetchTopNews(8),
+    ...FEATURED_LEAGUES.map((l) => fetchPostsByLeagueSlug(l.slug, 3)),
+  ]);
+
   return (
-    <>
-      <TopBar />
-      <HeaderBanner />
-      <MainNav />
+    <SiteShell>
+      <FeaturedVideo />
+      <NewsList items={topNews} />
+      <NewsBottomRow />
 
-      <main className="w-[970px] mx-auto py-3 grid grid-cols-[1fr_300px] gap-2">
-        {/* Main content (right in RTL) */}
-        <div>
-          <FeaturedVideo />
-          <NewsList items={topNews.slice(0, 8)} />
-          <NewsBottomRow />
+      {FEATURED_LEAGUES.map((sec, i) => (
+        <LeagueSection
+          key={sec.slug}
+          title={sec.title}
+          items={leagueNewsArrays[i]}
+          moreHref={`/competitions/${sec.slug}`}
+        />
+      ))}
 
-          {leagueSections.map((sec) => (
-            <LeagueSection key={sec.id} title={sec.title} items={sec.items} />
-          ))}
-
-          <ErrorVideo />
-          <VideoPicks />
-          <Interviews />
-          <Tournaments />
-          <LatestAdditions />
-        </div>
-
-        {/* Sidebar (left in RTL) */}
-        <aside>
-          <SidebarAd />
-          <ImportantMatches />
-          <SidebarVideos />
-          <TopLeagues />
-          <TopClubs />
-          <MostRead />
-          <Articles />
-          <Poll />
-        </aside>
-      </main>
-
-      <Footer />
-    </>
+      <ErrorVideo />
+      <VideoPicks />
+      <Interviews />
+      <Tournaments />
+      <LatestAdditions />
+    </SiteShell>
   );
 }

@@ -1,4 +1,5 @@
 import TimezoneWidget from "./TimezoneWidget";
+import SearchBox from "./SearchBox";
 
 const flags = [
   { code: "ma", name: "المغرب", src: "https://flagcdn.com/w40/ma.png" },
@@ -83,10 +84,7 @@ export default function TopBar() {
             </div>
 
             {/* Search */}
-            <button aria-label="بحث" className="hover:opacity-80">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/img/search.png" alt="" className="w-[20px] h-[20px]" />
-            </button>
+            <SearchBox />
           </div>
 
           <div className="flex-1" />
